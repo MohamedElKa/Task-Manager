@@ -1,101 +1,165 @@
+"use client"
+
 import Image from "next/image";
+import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
+import React, { useEffect, useState } from "react";
+import Status from "./components/Status.tsx";
+import {Badge} from "@heroui/badge";
+import AddTask from "./components/AddTask.tsx";
+import Details from "./components/Details.tsx";
+import { useTask } from "./contexts/TaskContext.tsx";
+import data from "./data"
 
-export default function Home() {
+const Task = React.memo(({task, index}) => {
+  const [info, setInfo] = useState(false)
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <>
+    <Draggable key={task.id} draggableId={task.id} index={index}>
+              {
+                (provided) =>{
+                  return (
+                    <div 
+                    onClick={() =>{
+                        document.body.style.overflow = "hidden"
+                        
+                        setInfo(!info)
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+                    }}
+                    className="bg-[#2C2C38] h-[100px] flex flex-col justify-center pl-[15px] pr-[15px] rounded" {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
+                    <h1 className="text-white text-[23px]  font-bold">{task.title}</h1>
+                    <p className="text-[#697080]">- 03/02/2025</p>
+                  </div>
+
+                  )
+                }
+              }
+            </Draggable>
+          {info && <Details data={task} info={info} setInfo={setInfo}/>}
+
+    </>
+   
+  )
+})
+const Column = React.memo(({column ,data}) => {
+
+      return (
+        <Droppable droppableId={column.id}>
+        {
+          (provided) => {
+            return (
+              
+              <div className=" flex flex-col gap-[25px] p-[7px] w-[305px] flex-wrap"   {...provided.droppableProps}
+              ref={provided.innerRef}>
+                <div className="flex items-center gap-[7px]">
+                  <div  className="w-[15px] h-[15px] rounded bg-[#6663C5]" style={{background: column.color}}/><div></div>
+                <h1 className="text-[#697080] font-bold">
+                  {column.title} </h1>
+    
+                </div>
+              {
+                column.tasks.map((task, index) => {
+                  const t = data.tasks[task]
+                  if (t){
+                    return (
+                      
+                              <Task task={t} index={index} key={t.id}>
+          
+                              </Task>
+                    )
+    
+                  }
+                })
+              }
+                        {provided.placeholder}
+    
+          </div>
+            )
+    
+          }
+        }
+    
+      </Droppable>
+    )
+})
+export default function Home() {
+  const {Data, setData} = useTask()
+  useEffect(() =>{
+    const d = localStorage.getItem("data");
+    if (d)
+      setData(JSON.parse(d))
+    else{
+      setData(undefined)
+      
+    }
+    const myJson = JSON.stringify(data)
+    if (!d)
+      localStorage.setItem("data", myJson)
+  }, [])
+  const onDragEnd = (result) =>{
+    // console.log(result)
+    if (!result.destination )
+        return ;
+      setData(prevData => {
+
+          const {source, destination} = result;
+          const newData = {...prevData};
+          const columnS = newData.columns[source.droppableId];
+          const columnD = newData.columns[destination.droppableId]
+      
+          if (columnS.id === columnD.id){
+              const [movedItem] = columnS.tasks.splice(source.index, 1);
+              columnS.tasks.splice(destination.index, 0, movedItem)
+      
+          }
+          else if (columnS.id !== columnD.id){
+            const [movedItem] = columnS.tasks.splice(source.index, 1);
+            columnD.tasks.splice(destination.index, 0, movedItem)
+          }
+          localStorage.setItem("data", JSON.stringify(newData));
+          return newData;
+          // setTimeout(() => {
+          //   setData(newData);
+          // }, 0);
+          
+      })
+    
+
+  }
+  
+  useEffect(() => {
+    console.log("columns rerender!") 
+    console.log("data => ", Data)    
+  })
+  useEffect(() => {
+    if (Data)
+    {
+        localStorage.setItem("data", JSON.stringify(Data));
+    }
+
+  }, [Data])
+
+ 
+  return (
+    <div className="flex pt-[75px] gap-[15px] w-[100%] pl-[15px] justify-center">
+     
+        <div className="columns flex gap-[25px] flex-wrap justify-center">
+
+          <DragDropContext key={JSON.stringify(Data)} onDragEnd={onDragEnd}>
+              {Data &&
+                Object.values(Data.columns).map((column, index) => {
+                  
+                  return(
+                            <Column column={column} data={Data} key={index}
+                            >
+                            </Column>
+
+
+                  )
+                })
+              }
+
+          </DragDropContext>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
   );
 }
