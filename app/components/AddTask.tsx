@@ -34,32 +34,49 @@ import { motion } from "motion/react"
 export default function AddTask({task, setTask}){
     const titleRef = useRef(null);
     const descRef = useRef(null);
-    const [selectValue, setSelectValue] = useState("todo");
+    const [selectValue, setSelectValue] = useState("column-1");
     const {Data, setData} = useTask()
-    const data = localStorage.getItem("data")
-    const d = JSON.parse(data)
+    const d = {...Data}
+
+    const checkInput = (value) => {
+        if (!value.current.validity.valid)
+        {
+            console.log(value.current.validity.valid)
+            value.current.style.border = "1px solid red"
+            toast.error("This field can't be empty", {
+                description: moment().format("MMMM Do YYYY, h:mm:ss a"),
+                action: {
+                  onClick: () => console.log("Undo"),
+                },
+              })
+            return false;
+        }
+        else{
+            value.current.style.border = "1px solid white"
+
+        }
+        return true;
+    }
 
     const submit = () => {
-        if (data){
-            // console.log(Object.keys(d.tasks).length)
+        if (!checkInput(titleRef) || !checkInput(descRef))
+            return ;
+        if (d){
             const taskId = `task-${++Object.keys(d.tasks).length}`
-            // console.log("d => ", d)
             const tasks = d.tasks;
             if (titleRef.current.value != "" && descRef.current.value != ""){
                 tasks[taskId] = {
                     "id": taskId,
                     "content": descRef.current.value,
-                    "title": titleRef.current.value
+                    "title": titleRef.current.value,
+                    "time": moment().format("MMMM Do YYYY, h:mm:ss a")
                 }
                  
             }
+            if (!d.columns || !d.columns[selectValue])
+                return ;
+            console.log(d)
             d.columns[selectValue].tasks.push(taskId)
-            // console.log("select-value => ", selectValue)
-            // d.columns.array.map((column) => {
-            //     if (column.id == selectValue){
-            //         column.tasks.push(taskId)
-            //     }
-            // })
             setData(d)
             localStorage.setItem("data", JSON.stringify(d))
             toast.success("a Task has been created", {
@@ -68,20 +85,15 @@ export default function AddTask({task, setTask}){
                   onClick: () => console.log("Undo"),
                 },
               })
+            document.body.style.overflow = "auto"
+            setTask(!task)
         }
-        // console.log("titleref => ", titleRef.current.value)
-        // console.log("titleref => ", descRef.current.value)
-        // console.log("titleref => ", selectValue)
+      
     }
     const handleOnChange = (value) => {
-        // console.log(value)
         setSelectValue(value);
     }
-    // useEffect(() => {
-    //     d.columns[value].task.push()
-    //     setData()
-    // }, [selectValue])
-    
+
     return (
         <>
         <motion.div
@@ -107,18 +119,18 @@ export default function AddTask({task, setTask}){
                 <CardContent className="flex flex-col gap-[7px]">
                         
                     <Label htmlFor="title" className="text-white">Title</Label>
-                    <Input ref={titleRef} type="text" id="title" placeholder="e.g Take coffee break" className="rounded text-white"></Input>
+                    <Input required ref={titleRef} type="text" id="title" placeholder="e.g Take coffee break" className="rounded text-white"></Input>
                 </CardContent>
                 <CardContent className="flex flex-col gap-[7px]">
                         
                     <Label htmlFor="description" className="text-white">Description</Label>
-                    <Textarea ref={descRef} type="text" id="description" placeholder="e.g It's always good to take a break
+                    <Textarea required ref={descRef} type="text" id="description" placeholder="e.g It's always good to take a break
                     this 15 minutes break will recharge the batteries a little." className="text-white py-1 placeholder:h-[100%] resize-none rounded h-[155px] pt-[7px]"></Textarea >
                 </CardContent>
                 <CardContent className="flex flex-col gap-[7px]">
                     <Label htmlFor="description" className="text-white">Status</Label>
                         
-                <Select onValueChange={handleOnChange} defaultValue="todo" className="text-white" >
+                <Select onValueChange={handleOnChange} defaultValue="column-1" className="text-white" >
                 <SelectTrigger className="w-[180px] text-white">
                     <SelectValue placeholder="Status" />
                 </SelectTrigger>
@@ -138,8 +150,7 @@ export default function AddTask({task, setTask}){
                     <Button 
                     onClick={() => {
                         submit()
-                        document.body.style.overflow = "auto"
-                        setTask(!task)
+                        
 
                     }}
                     className="bg-[#514E95] hover-bg-[#514E95] cursor-pointer transition-[0.5s]">Add</Button>

@@ -41,7 +41,7 @@ export default function Details({data, info, setInfo}){
             </div>
             <Card className="rounded w-[377px] bg-[#2C2C38] border-none absolute z-10 top-[50%] left-[50%] translate-[-50%]">
                 <CardHeader>
-                    <CardTitle className="text-white">{data.title}</CardTitle>
+                    <CardTitle className="text-white leading-[32px] break-words">{data.title}</CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-[7px]">
                     <p className="text-[#697080]">
@@ -51,21 +51,6 @@ export default function Details({data, info, setInfo}){
                     </p>
                 </CardContent>
                
-                {/* <CardContent className="flex flex-col gap-[7px]">
-                    <Label htmlFor="description" className="text-white">Status</Label>
-                        
-                <Select defaultValue={"todo"} className="text-white">
-                <SelectTrigger className="w-[180px] text-white">
-                    <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="todo">To Do</SelectItem>
-                    <SelectItem value="onprogress">On Progress</SelectItem>
-                    <SelectItem value="done">Done</SelectItem>
-                </SelectContent>
-                </Select>
-
-                </CardContent> */}
                 <CardFooter className="flex justify-between">
                     <Button onClick={() => {
                         const newData = JSON.parse(JSON.stringify(Data));

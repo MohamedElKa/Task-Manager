@@ -10,7 +10,7 @@ export default function Header(){
     return (
         <>
             <header className="bg-[#ECEDEE] w-[100%] h-[55px] flex items-center pr-[15px] pl-[15px] justify-between">
-                <h1 className="text-[21px] font-bold text-white">Task Manager</h1>
+                <h1 className="text-[21px] font-bold text-white">TaskFlow</h1>
                 <Button onClick={() => {
                     setTask(!task)
                     document.body.style.overflow = "hidden"

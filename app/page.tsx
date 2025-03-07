@@ -25,9 +25,9 @@ const Task = React.memo(({task, index}) => {
                         setInfo(!info)
 
                     }}
-                    className="bg-[#2C2C38] h-[100px] flex flex-col justify-center pl-[15px] pr-[15px] rounded" {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
-                    <h1 className="text-white text-[23px]  font-bold">{task.title}</h1>
-                    <p className="text-[#697080]">- 03/02/2025</p>
+                    className="bg-[#2C2C38] w-[100%] h-[100px] flex flex-col justify-center pl-[15px] pr-[15px] rounded" {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
+                    <h1 className="text-white text-[23px]  font-bold overflow-hidden">{task.title}</h1>
+                    <p className="text-[#697080]">{task.time}</p>
                   </div>
 
                   )
