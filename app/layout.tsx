@@ -19,7 +19,6 @@ export default function RootLayout({
       >
         <Toaster duration={3000} toastOptions={{
               style: { backgroundColor: "#514e95", color: "white", borderColor: "#2C2C38"},
-              descriptionStyle: {color: "#697080"}, // Change to your preferred color
 
         }}/>
 

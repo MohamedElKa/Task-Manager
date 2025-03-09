@@ -2,12 +2,9 @@
 
 import {Card, CardHeader, CardBody} from "@heroui/card";
 import Image from "next/image";
+import { InfoTypes } from "../types";
+// import InfoTypes from "../types"
 
-interface InfoTypes{
-    title: string;
-    image: string;    
-    value: number;
-}
 export default function Status({info} : {info: InfoTypes}){
   return (
     <Card className="py-4 bg-[#2C2C38] w-[255px] flex flex-col justify- pl-[18px] rounded">

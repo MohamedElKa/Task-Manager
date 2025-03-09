@@ -8,26 +8,17 @@ import {
     CardHeader,
     CardTitle,
   } from "@/components/ui/card"
-  import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-  } from "@/components/ui/select"
+ 
   
-  import { Textarea } from "@/components/ui/textarea"
-
-  import { Input } from "@/components/ui/input"
-  import { Label } from "@/components/ui/label"
 import "../globals.css"
 import { Button } from "@/components/ui/button"
 import { useTask } from "../contexts/TaskContext"
 import { toast } from "sonner"
 import moment from "moment"
+import { DataTypes, InfoTypes, TaskTypes } from "../types"
 
-export default function Details({data, info, setInfo}){
-    const {Data, setData} = useTask()
+export default function Details({data, info, setInfo} : {data: TaskTypes, info: boolean, setInfo: Function}){
+    const {Data, setData} : any= useTask()
     return (
         <>
         <div
@@ -56,9 +47,9 @@ export default function Details({data, info, setInfo}){
                         const newData = JSON.parse(JSON.stringify(Data));
                         // console.log("ccccc => ", newData.columns["columns-1"])
                         delete newData.tasks[data.id]
-                        newData.columns["column-1"].tasks = newData.columns["column-1"].tasks.filter((task) => task != data.id)
-                        newData.columns["column-2"].tasks = newData.columns["column-2"].tasks.filter((task) => task != data.id)
-                        newData.columns["column-3"].tasks = newData.columns["column-3"].tasks.filter((task) => task != data.id)
+                        newData.columns["column-1"].tasks = newData.columns["column-1"].tasks.filter((task : string) => task != data.id)
+                        newData.columns["column-2"].tasks = newData.columns["column-2"].tasks.filter((task : string) => task != data.id)
+                        newData.columns["column-3"].tasks = newData.columns["column-3"].tasks.filter((task : string) => task != data.id)
 
                         // console.log("newData => ", newData)
                         setInfo(!info)

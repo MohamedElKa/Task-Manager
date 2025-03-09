@@ -4,16 +4,25 @@ import { createContext, useContext, useEffect } from "react"
 import { useState } from "react";
 import data from "../data"
 
-const TaskContext = createContext();
+import {ReactNode} from "react"
+import { DataTypes } from "../types";
 
-const useTask = () => {
-    return useContext(TaskContext)
+const TaskContext = createContext<{
+    Data: DataTypes;
+    setData: React.Dispatch<React.SetStateAction<DataTypes>>;
+} | null>(null);
+
+const useTask = () : { Data: DataTypes; setData: React.Dispatch<React.SetStateAction<DataTypes>> } | null => {
+    const context = useContext(TaskContext)
+    return context;
 }
 
-export default function TaskProvider({children}){
-      const [Data, setData] = useState(undefined)
+export default function TaskProvider({children} :{children: ReactNode}){
+      const [Data, setData] : any = useState(null)
         useEffect(() => {
-            setData(JSON.parse(localStorage.getItem("data")))
+            const d = localStorage.getItem("data");
+            if (d)
+                setData(JSON.parse(d))
         }, [])
     return (
         <TaskContext.Provider value={{Data, setData}}>

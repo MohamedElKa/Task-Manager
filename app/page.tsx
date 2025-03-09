@@ -3,14 +3,15 @@
 import Image from "next/image";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import React, { useEffect, useState } from "react";
-import Status from "./components/Status.tsx";
+import Status from "./components/Status";
 import {Badge} from "@heroui/badge";
-import AddTask from "./components/AddTask.tsx";
-import Details from "./components/Details.tsx";
-import { useTask } from "./contexts/TaskContext.tsx";
+import AddTask from "./components/AddTask";
+import Details from "./components/Details";
+import { useTask } from "./contexts/TaskContext";
 import data from "./data"
+import { ColumnTypes, DataTypes, TaskTypes } from "./types";
 
-const Task = React.memo(({task, index}) => {
+const Task = React.memo(({task, index} : {task: TaskTypes, index: number}) => {
   const [info, setInfo] = useState(false)
   return (
     <>
@@ -40,7 +41,7 @@ const Task = React.memo(({task, index}) => {
    
   )
 })
-const Column = React.memo(({column ,data}) => {
+const Column = React.memo(({column ,data} : {column: ColumnTypes, data: DataTypes}) => {
 
       return (
         <Droppable droppableId={column.id}>
@@ -82,24 +83,24 @@ const Column = React.memo(({column ,data}) => {
     )
 })
 export default function Home() {
-  const {Data, setData} = useTask()
+  const {Data, setData} : any = useTask()
   useEffect(() =>{
     const d = localStorage.getItem("data");
     if (d)
       setData(JSON.parse(d))
-    else{
-      setData(undefined)
+    // else{
+    //   setData(undefined)
       
-    }
+    // }
     const myJson = JSON.stringify(data)
     if (!d)
       localStorage.setItem("data", myJson)
   }, [])
-  const onDragEnd = (result) =>{
+  const onDragEnd = (result : any) =>{
     // console.log(result)
     if (!result.destination )
         return ;
-      setData(prevData => {
+      setData((prevData : DataTypes) => {
 
           const {source, destination} = result;
           const newData = {...prevData};
@@ -126,10 +127,10 @@ export default function Home() {
 
   }
   
-  useEffect(() => {
-    console.log("columns rerender!") 
-    console.log("data => ", Data)    
-  })
+  // useEffect(() => {
+  //   console.log("columns rerender!") 
+  //   console.log("data => ", Data)    
+  // })
   useEffect(() => {
     if (Data)
     {
@@ -146,7 +147,7 @@ export default function Home() {
 
           <DragDropContext key={JSON.stringify(Data)} onDragEnd={onDragEnd}>
               {Data &&
-                Object.values(Data.columns).map((column, index) => {
+                Object.values(Data.columns).map((column : any, index : any)  => {
                   
                   return(
                             <Column column={column} data={Data} key={index}

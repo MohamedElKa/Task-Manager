@@ -30,24 +30,24 @@ import { Toaster } from "sonner"
 import { toast } from "sonner"
 import moment, { duration } from "moment";
 import { motion } from "motion/react"
+import { DataTypes, TaskTypes } from "../types"
 
-export default function AddTask({task, setTask}){
-    const titleRef = useRef(null);
-    const descRef = useRef(null);
+export default function AddTask({task, setTask} : {task: boolean, setTask: Function}){
+    const titleRef = useRef<HTMLInputElement | null>(null);
+    const descRef = useRef<HTMLTextAreaElement | null>(null);
     const [selectValue, setSelectValue] = useState("column-1");
-    const {Data, setData} = useTask()
+    const {Data, setData}  : any = useTask()
     const d = {...Data}
 
-    const checkInput = (value) => {
+    const checkInput = (value : any) => {
+        if (!value || !value.current)
+            return false;
         if (!value.current.validity.valid)
         {
             console.log(value.current.validity.valid)
             value.current.style.border = "1px solid red"
             toast.error("This field can't be empty", {
                 description: moment().format("MMMM Do YYYY, h:mm:ss a"),
-                action: {
-                  onClick: () => console.log("Undo"),
-                },
               })
             return false;
         }
@@ -61,7 +61,7 @@ export default function AddTask({task, setTask}){
     const submit = () => {
         if (!checkInput(titleRef) || !checkInput(descRef))
             return ;
-        if (d){
+        if (d && titleRef.current && descRef.current){
             const taskId = `task-${++Object.keys(d.tasks).length}`
             const tasks = d.tasks;
             if (titleRef.current.value != "" && descRef.current.value != ""){
@@ -81,16 +81,13 @@ export default function AddTask({task, setTask}){
             localStorage.setItem("data", JSON.stringify(d))
             toast.success("a Task has been created", {
                 description: moment().format("MMMM Do YYYY, h:mm:ss a"),
-                action: {
-                  onClick: () => console.log("Undo"),
-                },
               })
             document.body.style.overflow = "auto"
             setTask(!task)
         }
       
     }
-    const handleOnChange = (value) => {
+    const handleOnChange = (value : string) => {
         setSelectValue(value);
     }
 
@@ -124,13 +121,13 @@ export default function AddTask({task, setTask}){
                 <CardContent className="flex flex-col gap-[7px]">
                         
                     <Label htmlFor="description" className="text-white">Description</Label>
-                    <Textarea required ref={descRef} type="text" id="description" placeholder="e.g It's always good to take a break
+                    <Textarea required ref={descRef}  id="description" placeholder="e.g It's always good to take a break
                     this 15 minutes break will recharge the batteries a little." className="text-white py-1 placeholder:h-[100%] resize-none rounded h-[155px] pt-[7px]"></Textarea >
                 </CardContent>
                 <CardContent className="flex flex-col gap-[7px]">
                     <Label htmlFor="description" className="text-white">Status</Label>
                         
-                <Select onValueChange={handleOnChange} defaultValue="column-1" className="text-white" >
+                <Select onValueChange={handleOnChange} defaultValue="column-1"  >
                 <SelectTrigger className="w-[180px] text-white">
                     <SelectValue placeholder="Status" />
                 </SelectTrigger>
