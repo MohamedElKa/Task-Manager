@@ -144,7 +144,7 @@ export default function Home() {
     <div className="flex pt-[75px] gap-[15px] w-[100%] pl-[15px] justify-center">
      
         <div className="columns flex gap-[25px] flex-wrap justify-center">
-
+          <div className="bg-[#ff0000]">hello</div>
           <DragDropContext key={JSON.stringify(Data)} onDragEnd={onDragEnd}>
               {Data &&
                 Object.values(Data.columns).map((column : any, index : any)  => {
