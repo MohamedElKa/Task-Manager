@@ -86,6 +86,7 @@ export default function AddTask({task, setTask} : {task: boolean, setTask: Funct
             setTask(!task)
         }
       
+        
     }
     const handleOnChange = (value : string) => {
         setSelectValue(value);
